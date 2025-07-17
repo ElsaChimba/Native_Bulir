@@ -1,71 +1,97 @@
-import { View, Text, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground } from 'react-native';
+import axios from 'axios';
 
-export default function LoginScreen() {
-  const navigation = useNavigation<any>();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function LoginScreen({ navigation }: any) {
+  const [identificador, setIdentificador] = useState('');
+  const [senha, setSenha] = useState('');
 
-  const handleLogin = () => {
-    navigation.navigate('Restaurantes');
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://backendbulir-production.up.railway.app/auth/login', {
+        identificador,
+        senha,
+      });
+
+      const { token } = response.data;
+      Alert.alert('Login realizado com sucesso!');
+      navigation.navigate('Home');
+
+    } catch (error: any) {
+      Alert.alert('Erro', error.response?.data?.message || 'Erro ao fazer login');
+    }
   };
 
   return (
     <ImageBackground
-      source={require('../assets/restaurantes/restaurante.jpg')}
-      style={{ flex: 1, justifyContent: 'center', padding: 24 }}
-      imageStyle={{ resizeMode: 'cover' }}
+      source={require('../assets/bg.png')}
+      style={styles.background}
+      resizeMode="cover"
     >
-      <View style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 10, padding: 20 }}>
-        <Text style={{ fontSize: 24, color: '#D4AF37', marginBottom: 16, textAlign: 'center' }}>
-          Login
-        </Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Entrar</Text>
 
         <TextInput
           placeholder="E-mail ou NIF"
-          placeholderTextColor="#ccc"
-          value={email}
-          onChangeText={setEmail}
-          style={{
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            color: 'white',
-            marginBottom: 12,
-            padding: 10,
-            borderRadius: 8,
-          }}
+          value={identificador}
+          onChangeText={setIdentificador}
+          style={styles.input}
+          placeholderTextColor="#999"
         />
 
         <TextInput
           placeholder="Senha"
-          placeholderTextColor="#ccc"
           secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          style={{
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            color: 'white',
-            marginBottom: 12,
-            padding: 10,
-            borderRadius: 8,
-          }}
+          value={senha}
+          onChangeText={setSenha}
+          style={styles.input}
+          placeholderTextColor="#999"
         />
 
-        <TouchableOpacity
-          onPress={handleLogin}
-          style={{ backgroundColor: '#D4AF37', padding: 12, borderRadius: 8 }}
-        >
-          <Text style={{ color: 'black', textAlign: 'center', fontWeight: 'bold' }}>
-            Entrar
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-          <Text style={{ color: '#D4AF37', textAlign: 'center', marginTop: 12 }}>
-            Não tem conta? Cadastre-se
-          </Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  container: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    margin: 20,
+    borderRadius: 12,
+    padding: 24,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#000',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    color: '#000',
+  },
+  button: {
+    backgroundColor: '#D4AF37',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
