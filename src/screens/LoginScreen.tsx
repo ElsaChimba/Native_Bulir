@@ -11,13 +11,13 @@ import {
 import axios from 'axios';
 
 export default function LoginScreen({ navigation }: any) {
-  const [nif, setNif] = useState('');
+  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
   const handleLogin = async () => {
     try {
       await axios.post('http://backendbulir-production.up.railway.app/auth/login', {
-        nif,
+        email,
         password: senha,
       });
       navigation.navigate('Restaurantes');
@@ -38,11 +38,13 @@ export default function LoginScreen({ navigation }: any) {
           <View style={styles.container}>
             <Text style={styles.title}>Entrar</Text>
             <TextInput
-              placeholder="NIF"
-              value={nif}
-              onChangeText={setNif}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
               style={styles.input}
               placeholderTextColor="#999"
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
             <TextInput
               placeholder="Senha"
