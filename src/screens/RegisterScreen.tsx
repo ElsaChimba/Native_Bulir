@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ImageBackground
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
@@ -11,15 +19,18 @@ export default function RegisterScreen({ navigation }: any) {
 
   const handleRegister = async () => {
     try {
-      await axios.post('http://backendbulir-production.up.railway.app/auth/register', {
-        nome,
+      await axios.post('https://backendbulir-production.up.railway.app/users', {
+        fullName: nome,
         email,
         nif,
-        senha,
+        password: senha,
+        role: 'CLIENT'
       });
+
       Alert.alert('Conta criada com sucesso!');
       navigation.navigate('Login');
     } catch (error: any) {
+      console.error('Erro no cadastro:', error);
       Alert.alert('Erro', error.response?.data?.message || 'Erro ao cadastrar');
     }
   };
@@ -69,6 +80,7 @@ export default function RegisterScreen({ navigation }: any) {
               onChangeText={setNif}
               style={styles.input}
               placeholderTextColor="#999"
+              keyboardType="numeric"
             />
             <TextInput
               placeholder="Senha"

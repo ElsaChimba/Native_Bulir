@@ -1,49 +1,30 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, ImageBackground } from 'react-native';
+import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { restaurantes } from '../data/restaurantes';
 import RestaurantCard from '../components/RestaurantCard';
 
 export default function RestaurantesScreen() {
   return (
-    <ImageBackground
-      source={require('../assets/bg.png')}
-      style={styles.bg}
-    >
-      <View style={styles.overlay} />
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Restaurantes Disponíveis</Text>
-      </View>
-      <View style={styles.container}>
-        <FlatList
-          data={restaurantes}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <RestaurantCard restaurante={item} />}
-        />
-      </View>
-    </ImageBackground>
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>Escolha um restaurante</Text>
+      {restaurantes.map((restaurante) => (
+        <RestaurantCard key={restaurante.id} restaurante={restaurante} />
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  bg: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-  },
   container: {
-    padding: 20,
-    paddingTop: 0,
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#121212',
   },
-  headerContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-  },
-  headerText: {
-    color: '#fff',
+  header: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#D4AF37',
+    marginBottom: 16,
+    textAlign: 'center',
   },
 });

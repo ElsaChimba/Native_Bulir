@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ImageBackground,
+} from 'react-native';
 import axios from 'axios';
 
 export default function LoginScreen({ navigation }: any) {
@@ -10,9 +18,9 @@ export default function LoginScreen({ navigation }: any) {
     try {
       await axios.post('http://backendbulir-production.up.railway.app/auth/login', {
         nif,
-        senha,
+        password: senha,
       });
-      Alert.alert('Login feito com sucesso!');
+      navigation.navigate('Restaurantes');
     } catch (error: any) {
       Alert.alert('Erro', error.response?.data?.message || 'Erro ao fazer login');
     }
@@ -26,11 +34,9 @@ export default function LoginScreen({ navigation }: any) {
     >
       <View style={styles.overlay}>
         <Text style={styles.appTitle}>E. Restaurants</Text>
-
         <View style={styles.centerContent}>
           <View style={styles.container}>
             <Text style={styles.title}>Entrar</Text>
-
             <TextInput
               placeholder="NIF"
               value={nif}
@@ -46,11 +52,9 @@ export default function LoginScreen({ navigation }: any) {
               style={styles.input}
               placeholderTextColor="#999"
             />
-
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
               <Text style={styles.buttonText}>Entrar</Text>
             </TouchableOpacity>
-
             <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.linkContainer}>
               <Text style={styles.linkText}>
                 Não tem conta? <Text style={styles.linkHighlight}>Criar conta</Text>
