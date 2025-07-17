@@ -4,11 +4,20 @@ import { Restaurante } from '../services/type';
 
 interface Props {
   restaurante: Restaurante;
+  navigation: any;
+  userId: string;
 }
 
-export default function RestaurantCard({ restaurante }: Props) {
+export default function RestaurantCard({ restaurante, navigation, userId }: Props) {
+  const handleReservar = () => {
+    navigation.navigate('Reservation', {
+      restaurante,
+      userId,
+    });
+  };
+
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={handleReservar}>
       <ImageBackground
         source={restaurante.imagem}
         style={styles.image}

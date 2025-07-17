@@ -3,12 +3,19 @@ import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { restaurantes } from '../data/restaurantes';
 import RestaurantCard from '../components/RestaurantCard';
 
-export default function RestaurantesScreen() {
+export default function RestaurantesScreen({ navigation, route }: any) {
+  const userId = route?.params?.userId ?? null;
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Escolha um restaurante</Text>
       {restaurantes.map((restaurante) => (
-        <RestaurantCard key={restaurante.id} restaurante={restaurante} />
+        <RestaurantCard
+          key={restaurante.id}
+          restaurante={restaurante}
+          navigation={navigation}
+          userId={userId}
+        />
       ))}
     </ScrollView>
   );
