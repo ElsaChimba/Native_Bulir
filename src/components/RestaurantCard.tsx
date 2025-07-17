@@ -1,33 +1,51 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, Button, Alert } from 'react-native';
-import { Restaurante } from '../type';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Restaurante } from '../services/type'; 
 
 type Props = {
   restaurante: Restaurante;
 };
 
-export default function RestaurantCard({ restaurante }: Props) {
+export default function RestauranteCard({ restaurante }: Props) {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card}>
       <Image source={restaurante.imagem} style={styles.image} />
+      <View style={styles.overlay} />
       <View style={styles.info}>
-        <Text style={styles.name}>{restaurante.nome}</Text>
-        <Text style={styles.desc}>{restaurante.descricao}</Text>
-        <Button title="Reservar" onPress={() => Alert.alert('Reserva feita!')} />
+        <Text style={styles.nome}>{restaurante.nome}</Text>
+        <Text style={styles.descricao}>{restaurante.descricao}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: 16,
-    backgroundColor: '#000000a0',
-    borderRadius: 10,
+    marginBottom: 20,
+    borderRadius: 12,
     overflow: 'hidden',
   },
-  image: { width: '100%', height: 150 },
-  info: { padding: 10 },
-  name: { fontSize: 20, color: '#fff', marginBottom: 4 },
-  desc: { fontSize: 14, color: '#ccc', marginBottom: 8 },
+  image: {
+    width: '100%',
+    height: 180,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  info: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    right: 16,
+  },
+  nome: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  descricao: {
+    color: '#fff',
+    fontSize: 14,
+  },
 });
