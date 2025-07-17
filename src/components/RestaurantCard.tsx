@@ -1,51 +1,68 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Restaurante } from '../services/type'; 
+import { View, Text, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native';
+import { Restaurante } from '../services/type';
 
-type Props = {
+interface Props {
   restaurante: Restaurante;
-};
+}
 
-export default function RestauranteCard({ restaurante }: Props) {
+export default function RestaurantCard({ restaurante }: Props) {
   return (
     <TouchableOpacity style={styles.card}>
-      <Image source={restaurante.imagem} style={styles.image} />
-      <View style={styles.overlay} />
-      <View style={styles.info}>
-        <Text style={styles.nome}>{restaurante.nome}</Text>
-        <Text style={styles.descricao}>{restaurante.descricao}</Text>
-      </View>
+      <ImageBackground
+        source={restaurante.imagem}
+        style={styles.image}
+        imageStyle={{ borderRadius: 12 }}
+      >
+        <View style={styles.overlay}>
+          <Text style={styles.title}>{restaurante.nome}</Text>
+          <Text style={styles.description}>{restaurante.descricao}</Text>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>Reservar</Text>
+          </View>
+        </View>
+      </ImageBackground>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    height: 200,
     marginBottom: 20,
     borderRadius: 12,
     overflow: 'hidden',
   },
   image: {
-    width: '100%',
-    height: 180,
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 16,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
   },
-  info: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
-  },
-  nome: {
+  title: {
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
   },
-  descricao: {
-    color: '#fff',
+  description: {
+    color: '#ccc',
     fontSize: 14,
+    marginVertical: 4,
+  },
+  button: {
+    marginTop: 10,
+    backgroundColor: '#D4AF37',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  buttonText: {
+    color: '#000',
+    fontWeight: 'bold',
   },
 });
