@@ -1,26 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
-export default function RegisterScreen({ navigation }: any) {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
+export default function LoginScreen({ navigation }: any) {
   const [nif, setNif] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleRegister = async () => {
+  const handleLogin = async () => {
     try {
-      await axios.post('http://backendbulir-production.up.railway.app/auth/register', {
-        nome,
-        email,
+      await axios.post('http://backendbulir-production.up.railway.app/auth/login', {
         nif,
         senha,
       });
-      Alert.alert('Conta criada com sucesso!');
-      navigation.navigate('Login');
+      Alert.alert('Login feito com sucesso!');
     } catch (error: any) {
-      Alert.alert('Erro', error.response?.data?.message || 'Erro ao cadastrar');
+      Alert.alert('Erro', error.response?.data?.message || 'Erro ao fazer login');
     }
   };
 
@@ -31,30 +25,12 @@ export default function RegisterScreen({ navigation }: any) {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={28} color="#fff" />
-        </TouchableOpacity>
-
         <Text style={styles.appTitle}>E. Restaurants</Text>
 
         <View style={styles.centerContent}>
           <View style={styles.container}>
-            <Text style={styles.title}>Criar Conta</Text>
+            <Text style={styles.title}>Entrar</Text>
 
-            <TextInput
-              placeholder="Nome"
-              value={nome}
-              onChangeText={setNome}
-              style={styles.input}
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-              placeholderTextColor="#999"
-            />
             <TextInput
               placeholder="NIF"
               value={nif}
@@ -71,13 +47,13 @@ export default function RegisterScreen({ navigation }: any) {
               placeholderTextColor="#999"
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Cadastrar</Text>
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Entrar</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.linkContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.linkContainer}>
               <Text style={styles.linkText}>
-                Já tem conta? <Text style={styles.linkHighlight}>Entrar</Text>
+                Não tem conta? <Text style={styles.linkHighlight}>Criar conta</Text>
               </Text>
             </TouchableOpacity>
           </View>
@@ -95,12 +71,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingTop: 60,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 40,
-    left: 20,
-    zIndex: 10,
   },
   appTitle: {
     fontSize: 28,
