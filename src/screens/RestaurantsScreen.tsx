@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import { View, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { restaurantes } from '../data/restaurantes';
 import RestaurantCard from '../components/RestaurantCard';
 
@@ -8,7 +9,13 @@ export default function RestaurantesScreen({ navigation, route }: any) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Escolha um restaurante</Text>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={28} color="#D4AF37" />
+        </TouchableOpacity>
+        <Text style={styles.header}>Escolha um restaurante</Text>
+      </View>
+
       {restaurantes.map((restaurante) => (
         <RestaurantCard
           key={restaurante.id}
@@ -27,11 +34,18 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#121212',
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  backButton: {
+    marginRight: 12,
+    padding: 5,
+  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#D4AF37',
-    marginBottom: 16,
-    textAlign: 'center',
   },
 });
