@@ -17,25 +17,18 @@ export default function LoginScreen({ navigation }: any) {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://backendbulir-production.up.railway.app/auth/login', {
+      await axios.post('http://backendbulir-production.up.railway.app/auth/login', {
         email,
         password: senha,
       });
-
-      const { token, user } = response.data;
-
-      if (user.role === 'provider') {
-        navigation.navigate('ServiceManagement');
-      } else {
-        navigation.navigate('Restaurantes');
-      }
+      navigation.navigate('Restaurantes');
     } catch (error: any) {
       Alert.alert('Erro', error.response?.data?.message || 'Erro ao fazer login');
     }
   };
 
   const openLinkedIn = () => {
-    const url = 'https://www.linkedin.com/in/elsa-chimba-1a25012a0/';
+    const url = 'https://www.linkedin.com/in/elsa-chimba-1a25012a0/'; 
     Linking.openURL(url).catch(() => {
       Alert.alert('Erro', 'Não foi possível abrir o LinkedIn.');
     });
@@ -79,7 +72,6 @@ export default function LoginScreen({ navigation }: any) {
             </TouchableOpacity>
           </View>
         </View>
-
         <TouchableOpacity onPress={openLinkedIn} style={styles.footer}>
           <Text style={styles.footerText}>
             Feito por <Text style={styles.footerLink}>Elsa Chimba</Text>

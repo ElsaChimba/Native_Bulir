@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ImageBackground
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
@@ -19,18 +11,15 @@ export default function RegisterScreen({ navigation }: any) {
 
   const handleRegister = async () => {
     try {
-      await axios.post('https://backendbulir-production.up.railway.app/users', {
-        fullName: nome,
+      await axios.post('http://backendbulir-production.up.railway.app/auth/register', {
+        nome,
         email,
         nif,
-        password: senha,
-        role: 'CLIENT'
+        senha,
       });
-
       Alert.alert('Conta criada com sucesso!');
       navigation.navigate('Login');
     } catch (error: any) {
-      console.error('Erro no cadastro:', error);
       Alert.alert('Erro', error.response?.data?.message || 'Erro ao cadastrar');
     }
   };
@@ -42,14 +31,7 @@ export default function RegisterScreen({ navigation }: any) {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            if (navigation.canGoBack()) {
-              navigation.goBack();
-            }
-          }}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
 
@@ -72,7 +54,6 @@ export default function RegisterScreen({ navigation }: any) {
               onChangeText={setEmail}
               style={styles.input}
               placeholderTextColor="#999"
-              autoCapitalize="none"
             />
             <TextInput
               placeholder="NIF"
@@ -80,7 +61,6 @@ export default function RegisterScreen({ navigation }: any) {
               onChangeText={setNif}
               style={styles.input}
               placeholderTextColor="#999"
-              keyboardType="numeric"
             />
             <TextInput
               placeholder="Senha"
