@@ -6,6 +6,8 @@ import RegisterScreen from '../screens/RegisterScreen';
 import RestaurantesScreen from '../screens/RestaurantsScreen';
 import ReservationScreen from '../screens/ReservationScreen';
 import MyReservationsScreen from '../screens/MyReservationsScreen';
+import ServiceManagementScreen from '../screens/ServiceManagementScreen';
+
 
 
 
@@ -20,6 +22,8 @@ export default function App() {
                 <Stack.Screen name="Restaurantes" component={RestaurantesScreen} />
                 <Stack.Screen name="Reservation" component={ReservationScreen} />
                 <Stack.Screen name="MyReservations" component={MyReservationsScreen} />
+                <Stack.Screen name="ServiceManagement" component={ServiceManagementScreen} />
+
             </Stack.Navigator>
         </NavigationContainer>
     );
