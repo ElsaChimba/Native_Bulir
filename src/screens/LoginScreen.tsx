@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   ImageBackground,
+  Linking,
 } from 'react-native';
 import axios from 'axios';
 
@@ -24,6 +25,13 @@ export default function LoginScreen({ navigation }: any) {
     } catch (error: any) {
       Alert.alert('Erro', error.response?.data?.message || 'Erro ao fazer login');
     }
+  };
+
+  const openLinkedIn = () => {
+    const url = 'https://www.linkedin.com/in/elsa-chimba-1a25012a0/'; 
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Erro', 'Não foi possível abrir o LinkedIn.');
+    });
   };
 
   return (
@@ -64,6 +72,13 @@ export default function LoginScreen({ navigation }: any) {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Rodapé com seu nome e link */}
+        <TouchableOpacity onPress={openLinkedIn} style={styles.footer}>
+          <Text style={styles.footerText}>
+            Feito por <Text style={styles.footerLink}>Elsa Chimba</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -77,6 +92,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingTop: 60,
+    justifyContent: 'space-between',
   },
   appTitle: {
     fontSize: 28,
@@ -133,5 +149,17 @@ const styles = StyleSheet.create({
   linkHighlight: {
     color: '#D4AF37',
     fontWeight: 'bold',
+  },
+  footer: {
+    paddingVertical: 15,
+    alignItems: 'center',
+  },
+  footerText: {
+    color: '#D4AF37',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  footerLink: {
+    textDecorationLine: 'underline',
   },
 });
