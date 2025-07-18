@@ -1,108 +1,213 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  Image,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function ReservationScreen({ route, navigation }: any) {
-  const { restaurante, userId } = route.params;
+type RootStackParamList = {
+  ReservaScreen: { id: string; restaurante: { imagem: any; nome: string; descricao: string } };
+  MinhasReservas: undefined;
+};
 
-  const [mesa, setMesa] = useState('normal');
-  const [data, setData] = useState(new Date());
-  const [mostrarPicker, setMostrarPicker] = useState(false);
-  const [carregando, setCarregando] = useState(false);
+type ReservaScreenRouteProp = RouteProp<RootStackParamList, 'ReservaScreen'>;
 
-  const confirmarReserva = async () => {
+const mesas = [
+  { label: 'Mesa para 2', capacity: 2, price: 5000 },
+  { label: 'Mesa para 5', capacity: 5, price: 12000 },
+  { label: 'Mesa para 14', capacity: 14, price: 25000 },
+];
+
+export default function ReservaScreen() {
+  const route = useRoute<ReservaScreenRouteProp>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const { id, restaurante } = route.params;
+
+  const [selectedMesa, setSelectedMesa] = useState(mesas[0]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async () => {
+    setLoading(true);
     try {
-      setCarregando(true);
+      const token = await AsyncStorage.getItem('token');
+      if (!token) throw new Error('Usuário não autenticado');
 
-      const payload = {
-        userId,
-        serviceId: restaurante.id,
-        tableType: mesa,
-        date: data.toISOString(),
-      };
-
-      await axios.post('https://backendbulir-production.up.railway.app/reservations', payload);
-
-      Alert.alert('Sucesso', 'Reserva feita com sucesso!');
-      navigation.navigate('MyReservations', { userId });
+      await axios.post(
+        'https://backendbulir-production.up.railway.app/reservations',
+        {
+          serviceId: id,
+          details: selectedMesa,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMessage('Reserva realizada com sucesso!');
+      setTimeout(() => {
+        navigation.navigate('MinhasReservas');
+      }, 1000);
     } catch (error) {
-      console.error('Erro ao reservar:', error);
+      setMessage('Erro ao realizar reserva.');
       Alert.alert('Erro', 'Não foi possível concluir a reserva.');
     } finally {
-      setCarregando(false);
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Image source={restaurante.imagem} style={styles.image} />
-      <Text style={styles.title}>{restaurante.nome}</Text>
-      <Text style={styles.description}>{restaurante.descricao}</Text>
-
-      <Text style={styles.label}>Tipo de mesa</Text>
-      <Picker
-        selectedValue={mesa}
-        onValueChange={(itemValue) => setMesa(itemValue)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Normal" value="normal" />
-        <Picker.Item label="VIP" value="vip" />
-        <Picker.Item label="Casal" value="casal" />
-        <Picker.Item label="Grupo" value="grupo" />
-      </Picker>
-
-      <Text style={styles.label}>Data e Hora</Text>
-      <TouchableOpacity onPress={() => setMostrarPicker(true)} style={styles.dateButton}>
-        <Text style={styles.dateText}>{data.toLocaleString()}</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={28} color="#D4AF37" />
       </TouchableOpacity>
 
-      {mostrarPicker && (
-        <DateTimePicker
-          value={data}
-          mode="datetime"
-          display="default"
-          onChange={(event, selectedDate) => {
-            const currentDate = selectedDate || data;
-            setMostrarPicker(false);
-            setData(currentDate);
-          }}
-        />
-      )}
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <Image source={restaurante.imagem} style={styles.image} resizeMode="cover" />
+        <Text style={styles.restauranteNome}>{restaurante.nome}</Text>
+        <Text style={styles.restauranteDescricao}>{restaurante.descricao}</Text>
 
-      <TouchableOpacity
-        style={[styles.confirmButton, carregando && { backgroundColor: '#aaa' }]}
-        onPress={confirmarReserva}
-        disabled={carregando}
-      >
-        <Text style={styles.confirmButtonText}>
-          {carregando ? 'Enviando...' : 'Confirmar Reserva'}
-        </Text>
-      </TouchableOpacity>
+        <Text style={styles.title}>Escolha a mesa</Text>
+
+        <View>
+          {mesas.map((mesa) => {
+            const isSelected = selectedMesa.label === mesa.label;
+            return (
+              <TouchableOpacity
+                key={mesa.label}
+                style={[styles.mesaItem, isSelected && styles.mesaItemSelected]}
+                onPress={() => setSelectedMesa(mesa)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.mesaInfo}>
+                  <Text style={styles.mesaLabel}>{mesa.label}</Text>
+                  <Text style={styles.mesaCapacity}>Capacidade: {mesa.capacity} pessoas</Text>
+                  <Text style={styles.mesaPrice}>Preço: {mesa.price} kz</Text>
+                </View>
+                {isSelected && (
+                  <Ionicons name="checkmark-circle" size={28} color="#D4AF37" />
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <TouchableOpacity
+          onPress={handleSubmit}
+          disabled={loading}
+          style={[styles.button, loading && styles.buttonDisabled]}
+        >
+          {loading ? (
+            <ActivityIndicator color="#000" />
+          ) : (
+            <Text style={styles.buttonText}>Confirmar Reserva</Text>
+          )}
+        </TouchableOpacity>
+
+        {!!message && <Text style={styles.message}>{message}</Text>}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  image: { width: '100%', height: 200, borderRadius: 12, marginBottom: 10 },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 5 },
-  description: { fontSize: 16, color: '#666', marginBottom: 15 },
-  label: { fontSize: 16, marginBottom: 5, fontWeight: 'bold' },
-  picker: { height: 50, marginBottom: 15 },
-  dateButton: {
-    backgroundColor: '#eee',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
+  container: { flex: 1, backgroundColor: '#000' },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 20,
+    padding: 5,
   },
-  dateText: { fontSize: 16 },
-  confirmButton: {
+  scrollContent: {
+    padding: 20,
+    paddingTop: 100,
+    flexGrow: 1,
+  },
+  image: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 6,
+  },
+  restauranteNome: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginBottom: 2,
+    textAlign: 'left',
+  },
+  restauranteDescricao: {
+    color: '#ccc',
+    fontSize: 14,
+    marginBottom: 20,
+    textAlign: 'left',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#D4AF37',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  mesaItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(212, 175, 55, 0.15)',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  mesaItemSelected: {
+    backgroundColor: 'rgba(212, 175, 55, 0.4)',
+  },
+  mesaInfo: {
+    flexDirection: 'column',
+  },
+  mesaLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  mesaCapacity: {
+    fontSize: 14,
+    color: '#fff',
+  },
+  mesaPrice: {
+    fontSize: 14,
+    color: '#fff',
+  },
+  button: {
     backgroundColor: '#D4AF37',
-    padding: 14,
+    paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
   },
-  confirmButtonText: { fontWeight: 'bold', color: '#000' },
+  buttonDisabled: {
+    backgroundColor: '#aaa',
+  },
+  buttonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  message: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#D4AF37',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });

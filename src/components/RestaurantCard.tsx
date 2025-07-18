@@ -17,7 +17,9 @@ export default function RestaurantCard({ restaurante, navigation, userId }: Prop
   };
 
   return (
+    
     <TouchableOpacity style={styles.card} onPress={handleReservar}>
+      
       <ImageBackground
         source={restaurante.imagem}
         style={styles.image}
@@ -32,6 +34,7 @@ export default function RestaurantCard({ restaurante, navigation, userId }: Prop
         </View>
       </ImageBackground>
     </TouchableOpacity>
+    
   );
 }
 
